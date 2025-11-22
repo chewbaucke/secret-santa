@@ -1,0 +1,14 @@
+{
+  "name": "secret-santa",
+  "version": "1.0.0",
+  "description": "Secret Santa gift exchange assignment script",
+  "main": "secret-santa.js",
+  "type": "module",
+  "scripts": {
+    "start": "node secret-santa.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+

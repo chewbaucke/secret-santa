@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Thomas",
+    "notAllowedNames": [
+      "Lukas",
+      "Linus",
+      "Laurel"
+    ]
+  },
+  {
+    "name":"Laurel",
+    "notAllowedNames": [
+      "Thomas",
+      "Lukas",
+      "Linus"
+    ]
+  },
+  {
+    "name":"Lukas",
+    "notAllowedNames": [
+      "Thomas",
+      "Laurel",
+      "Linus"
+    ]
+  },
+  {
+    "name":"Linus",
+    "notAllowedNames": [
+      "Thomas",
+      "Laurel",
+      "Lukas"
+    ]
+  },
+  {
+    "name":"Tim",
+    "notAllowedNames": [
+      "Peter",
+      "Ingrid",
+      "Stella"
+    ]
+  },
+  {
+    "name":"Peter",
+    "notAllowedNames": [
+      "Clare",
+      "Tim",
+      "Ingrid",
+      "Stella"
+    ]
+  },
+  {
+    "name":"Clare",
+    "notAllowedNames": [
+      "Peter"
+    ]
+  },
+  {
+    "name":"Ingrid",
+    "notAllowedNames": [
+      "Tim",
+      "Peter",
+      "Stella"
+    ]
+  },
+  {
+    "name":"Stella",
+    "notAllowedNames": [
+      "Tim",
+      "Peter",
+      "Josh"
+    ]
+  },
+  {
+    "name":"Josh",
+    "notAllowedNames": [
+      "Stella"
+    ]
+  }
+]
