@@ -58,11 +58,30 @@ The app uses a greedy random algorithm with retry logic:
 
 For more details on algorithms and performance, see `ALGORITHM_ANALYSIS.md` and `RANDOMNESS_ANALYSIS.md`.
 
+## Testing
+
+The project uses Jest and React Testing Library for testing:
+
+```bash
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+See [TESTING.md](./TESTING.md) for detailed testing documentation.
+
 ## Tech Stack
 
 - **Next.js 14** - React framework
 - **TypeScript** - Type safety
 - **CSS-in-JS** - Styled with Next.js styled-jsx
+- **Jest** - Testing framework
+- **React Testing Library** - Component testing
 
 ## Deployment
 

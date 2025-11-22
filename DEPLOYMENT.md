@@ -62,10 +62,38 @@ This guide will help you deploy your Secret Santa app to Vercel.
 
 5. **Your app is deployed!** You'll get a URL like `https://secret-santa-xxx.vercel.app`
 
+## CI/CD Configuration
+
+### Automatic Test Execution
+
+The project is configured to run tests before deployment:
+
+1. **Vercel Build**: Tests run automatically before each build
+   - If tests fail, the deployment is cancelled
+   - Configured in `vercel.json` with `"buildCommand": "npm test && npm run build"`
+
+2. **GitHub Actions**: CI workflow runs on every push and PR
+   - Runs linter, tests, and build
+   - Located in `.github/workflows/ci.yml`
+   - Provides feedback before code is merged
+
+### How It Works
+
+- **On Push to Main**: 
+  - GitHub Actions runs tests → Vercel builds and deploys (if tests pass)
+  
+- **On Pull Request**:
+  - GitHub Actions runs tests → Provides feedback → Vercel creates preview deployment (if tests pass)
+
+- **If Tests Fail**:
+  - Vercel deployment is cancelled
+  - GitHub Actions shows failure status
+  - You'll see error details in both places
+
 ## Post-Deployment
 
-- **Automatic deployments**: Every push to your main branch will trigger a new deployment
-- **Preview deployments**: Pull requests get preview URLs automatically
+- **Automatic deployments**: Every push to your main branch will trigger a new deployment (only if tests pass)
+- **Preview deployments**: Pull requests get preview URLs automatically (only if tests pass)
 - **Custom domain**: Add your own domain in the Vercel dashboard under "Domains"
 
 ## Environment Variables
