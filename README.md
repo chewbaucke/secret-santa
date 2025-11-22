@@ -92,4 +92,3 @@ No environment variables are required - the app uses only browser localStorage.
 ## License
 
 ISC
-
