@@ -1,8 +1,11 @@
 import {
   loadParticipantsFromStorage,
   saveParticipantsToStorage,
+  loadAssignmentsFromStorage,
+  saveAssignmentsToStorage,
+  clearAssignmentsFromStorage,
 } from '@/lib/storage';
-import { Participant } from '@/lib/secret-santa';
+import { Participant, Assignment } from '@/lib/secret-santa';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -102,6 +105,107 @@ describe('storage utilities', () => {
       expect(loaded).toEqual([]);
       expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('assignment storage', () => {
+    beforeEach(() => {
+      localStorageMock.clear();
+    });
+
+    describe('saveAssignmentsToStorage', () => {
+      it('should save assignments to localStorage', () => {
+        const assignments: Assignment[] = [
+          { giver: 'Alice', receiver: 'Bob' },
+          { giver: 'Bob', receiver: 'Alice' },
+        ];
+
+        saveAssignmentsToStorage(assignments);
+
+        const stored = localStorageMock.getItem('secret-santa-assignments');
+        expect(stored).toBeTruthy();
+
+        const parsed = JSON.parse(stored!);
+        expect(parsed).toEqual(assignments);
+      });
+
+      it('should handle empty array', () => {
+        saveAssignmentsToStorage([]);
+
+        const stored = localStorageMock.getItem('secret-santa-assignments');
+        expect(stored).toBe('[]');
+      });
+
+      it('should overwrite existing assignments', () => {
+        const first: Assignment[] = [
+          { giver: 'Alice', receiver: 'Bob' },
+        ];
+        const second: Assignment[] = [
+          { giver: 'Bob', receiver: 'Alice' },
+        ];
+
+        saveAssignmentsToStorage(first);
+        saveAssignmentsToStorage(second);
+
+        const stored = localStorageMock.getItem('secret-santa-assignments');
+        const parsed = JSON.parse(stored!);
+        expect(parsed).toEqual(second);
+      });
+    });
+
+    describe('loadAssignmentsFromStorage', () => {
+      it('should load assignments from localStorage', () => {
+        const assignments: Assignment[] = [
+          { giver: 'Alice', receiver: 'Bob' },
+          { giver: 'Bob', receiver: 'Alice' },
+        ];
+
+        localStorageMock.setItem(
+          'secret-santa-assignments',
+          JSON.stringify(assignments)
+        );
+
+        const loaded = loadAssignmentsFromStorage();
+        expect(loaded).toEqual(assignments);
+      });
+
+      it('should return null if nothing stored', () => {
+        const loaded = loadAssignmentsFromStorage();
+        expect(loaded).toBeNull();
+      });
+
+      it('should return null if invalid JSON', () => {
+        localStorageMock.setItem('secret-santa-assignments', 'invalid json');
+
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+        const loaded = loadAssignmentsFromStorage();
+
+        expect(loaded).toBeNull();
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
+      });
+    });
+
+    describe('clearAssignmentsFromStorage', () => {
+      it('should remove assignments from localStorage', () => {
+        const assignments: Assignment[] = [
+          { giver: 'Alice', receiver: 'Bob' },
+        ];
+
+        localStorageMock.setItem(
+          'secret-santa-assignments',
+          JSON.stringify(assignments)
+        );
+
+        clearAssignmentsFromStorage();
+
+        const stored = localStorageMock.getItem('secret-santa-assignments');
+        expect(stored).toBeNull();
+      });
+
+      it('should handle clearing when nothing exists', () => {
+        expect(() => clearAssignmentsFromStorage()).not.toThrow();
+      });
     });
   });
 });

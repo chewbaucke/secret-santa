@@ -1,6 +1,7 @@
-import { Participant } from './secret-santa';
+import { Participant, Assignment } from './secret-santa';
 
-const STORAGE_KEY = 'secret-santa-participants';
+const PARTICIPANTS_STORAGE_KEY = 'secret-santa-participants';
+const ASSIGNMENTS_STORAGE_KEY = 'secret-santa-assignments';
 
 export function loadParticipantsFromStorage(): Participant[] {
   if (typeof window === 'undefined') {
@@ -8,12 +9,12 @@ export function loadParticipantsFromStorage(): Participant[] {
   }
 
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(PARTICIPANTS_STORAGE_KEY);
     if (stored) {
       return JSON.parse(stored);
     }
   } catch (error) {
-    console.error('Error loading from localStorage:', error);
+    console.error('Error loading participants from localStorage:', error);
   }
 
   return [];
@@ -25,9 +26,50 @@ export function saveParticipantsToStorage(participants: Participant[]): void {
   }
 
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(participants));
+    localStorage.setItem(PARTICIPANTS_STORAGE_KEY, JSON.stringify(participants));
   } catch (error) {
-    console.error('Error saving to localStorage:', error);
+    console.error('Error saving participants to localStorage:', error);
+  }
+}
+
+export function loadAssignmentsFromStorage(): Assignment[] | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const stored = localStorage.getItem(ASSIGNMENTS_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Error loading assignments from localStorage:', error);
+  }
+
+  return null;
+}
+
+export function saveAssignmentsToStorage(assignments: Assignment[]): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    localStorage.setItem(ASSIGNMENTS_STORAGE_KEY, JSON.stringify(assignments));
+  } catch (error) {
+    console.error('Error saving assignments to localStorage:', error);
+  }
+}
+
+export function clearAssignmentsFromStorage(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    localStorage.removeItem(ASSIGNMENTS_STORAGE_KEY);
+  } catch (error) {
+    console.error('Error clearing assignments from localStorage:', error);
   }
 }
 

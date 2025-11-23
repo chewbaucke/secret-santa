@@ -5,9 +5,10 @@ import { Assignment } from '@/lib/secret-santa';
 
 interface ResultsDisplayProps {
   assignments: Assignment[];
+  onClear?: () => void;
 }
 
-export default function ResultsDisplay({ assignments }: ResultsDisplayProps) {
+export default function ResultsDisplay({ assignments, onClear }: ResultsDisplayProps) {
   const [selectedGiver, setSelectedGiver] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -28,9 +29,16 @@ export default function ResultsDisplay({ assignments }: ResultsDisplayProps) {
     <div className="results-display">
       <div className="results-header">
         <h2>🎁 Secret Santa Assignments</h2>
-        <button onClick={handleCopy} className="copy-button">
-          {copied ? '✓ Copied!' : '📋 Copy All'}
-        </button>
+        <div className="header-buttons">
+          <button onClick={handleCopy} className="copy-button">
+            {copied ? '✓ Copied!' : '📋 Copy All'}
+          </button>
+          {onClear && (
+            <button onClick={onClear} className="clear-button">
+              🗑️ Clear
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="results-content">
@@ -77,9 +85,14 @@ export default function ResultsDisplay({ assignments }: ResultsDisplayProps) {
           margin: 0;
         }
 
-        .copy-button {
+        .header-buttons {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .copy-button,
+        .clear-button {
           padding: 0.5rem 1rem;
-          background: #667eea;
           color: white;
           border: none;
           border-radius: 6px;
@@ -88,8 +101,20 @@ export default function ResultsDisplay({ assignments }: ResultsDisplayProps) {
           transition: background 0.2s;
         }
 
+        .copy-button {
+          background: #667eea;
+        }
+
         .copy-button:hover {
           background: #5568d3;
+        }
+
+        .clear-button {
+          background: #999;
+        }
+
+        .clear-button:hover {
+          background: #777;
         }
 
         .results-content {

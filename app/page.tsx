@@ -5,6 +5,9 @@ import { Participant, Assignment, generateSecretSanta } from '@/lib/secret-santa
 import {
   loadParticipantsFromStorage,
   saveParticipantsToStorage,
+  loadAssignmentsFromStorage,
+  saveAssignmentsToStorage,
+  clearAssignmentsFromStorage,
 } from '@/lib/storage';
 import ParticipantManager from '@/components/ParticipantManager';
 import ConstraintsManager from '@/components/ConstraintsManager';
@@ -16,11 +19,16 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Load participants from localStorage on mount
+  // Load participants and assignments from localStorage on mount
   useEffect(() => {
-    const stored = loadParticipantsFromStorage();
-    if (stored.length > 0) {
-      setParticipants(stored);
+    const storedParticipants = loadParticipantsFromStorage();
+    if (storedParticipants.length > 0) {
+      setParticipants(storedParticipants);
+    }
+
+    const storedAssignments = loadAssignmentsFromStorage();
+    if (storedAssignments && storedAssignments.length > 0) {
+      setAssignments(storedAssignments);
     }
   }, []);
 
@@ -52,6 +60,7 @@ export default function Home() {
         }))
     );
     setAssignments(null);
+    clearAssignmentsFromStorage();
   };
 
   const handleUpdateConstraints = (participantName: string, notAllowedNames: string[]) => {
@@ -63,6 +72,7 @@ export default function Home() {
       )
     );
     setAssignments(null);
+    clearAssignmentsFromStorage();
   };
 
   const handleGenerate = () => {
@@ -78,6 +88,7 @@ export default function Home() {
     try {
       const result = generateSecretSanta(participants);
       setAssignments(result.assignments);
+      saveAssignmentsToStorage(result.assignments);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate assignments');
     } finally {
@@ -130,7 +141,13 @@ export default function Home() {
 
         {assignments && (
           <div className="section">
-            <ResultsDisplay assignments={assignments} />
+            <ResultsDisplay
+              assignments={assignments}
+              onClear={() => {
+                setAssignments(null);
+                clearAssignmentsFromStorage();
+              }}
+            />
           </div>
         )}
       </div>
