@@ -1,15 +1,20 @@
 import { Participant, Assignment } from './secret-santa';
 
-const PARTICIPANTS_STORAGE_KEY = 'secret-santa-participants';
-const ASSIGNMENTS_STORAGE_KEY = 'secret-santa-assignments';
+function getStorageKey(userId: string | undefined, baseKey: string): string {
+  if (!userId) {
+    return baseKey;
+  }
+  return `${baseKey}-${userId}`;
+}
 
-export function loadParticipantsFromStorage(): Participant[] {
+export function loadParticipantsFromStorage(userId?: string): Participant[] {
   if (typeof window === 'undefined') {
     return [];
   }
 
   try {
-    const stored = localStorage.getItem(PARTICIPANTS_STORAGE_KEY);
+    const key = getStorageKey(userId, 'secret-santa-participants');
+    const stored = localStorage.getItem(key);
     if (stored) {
       return JSON.parse(stored);
     }
@@ -20,25 +25,27 @@ export function loadParticipantsFromStorage(): Participant[] {
   return [];
 }
 
-export function saveParticipantsToStorage(participants: Participant[]): void {
+export function saveParticipantsToStorage(participants: Participant[], userId?: string): void {
   if (typeof window === 'undefined') {
     return;
   }
 
   try {
-    localStorage.setItem(PARTICIPANTS_STORAGE_KEY, JSON.stringify(participants));
+    const key = getStorageKey(userId, 'secret-santa-participants');
+    localStorage.setItem(key, JSON.stringify(participants));
   } catch (error) {
     console.error('Error saving participants to localStorage:', error);
   }
 }
 
-export function loadAssignmentsFromStorage(): Assignment[] | null {
+export function loadAssignmentsFromStorage(userId?: string): Assignment[] | null {
   if (typeof window === 'undefined') {
     return null;
   }
 
   try {
-    const stored = localStorage.getItem(ASSIGNMENTS_STORAGE_KEY);
+    const key = getStorageKey(userId, 'secret-santa-assignments');
+    const stored = localStorage.getItem(key);
     if (stored) {
       return JSON.parse(stored);
     }
@@ -49,25 +56,27 @@ export function loadAssignmentsFromStorage(): Assignment[] | null {
   return null;
 }
 
-export function saveAssignmentsToStorage(assignments: Assignment[]): void {
+export function saveAssignmentsToStorage(assignments: Assignment[], userId?: string): void {
   if (typeof window === 'undefined') {
     return;
   }
 
   try {
-    localStorage.setItem(ASSIGNMENTS_STORAGE_KEY, JSON.stringify(assignments));
+    const key = getStorageKey(userId, 'secret-santa-assignments');
+    localStorage.setItem(key, JSON.stringify(assignments));
   } catch (error) {
     console.error('Error saving assignments to localStorage:', error);
   }
 }
 
-export function clearAssignmentsFromStorage(): void {
+export function clearAssignmentsFromStorage(userId?: string): void {
   if (typeof window === 'undefined') {
     return;
   }
 
   try {
-    localStorage.removeItem(ASSIGNMENTS_STORAGE_KEY);
+    const key = getStorageKey(userId, 'secret-santa-assignments');
+    localStorage.removeItem(key);
   } catch (error) {
     console.error('Error clearing assignments from localStorage:', error);
   }

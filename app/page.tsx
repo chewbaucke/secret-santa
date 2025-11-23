@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { Participant, Assignment, generateSecretSanta } from '@/lib/secret-santa';
 import {
   loadParticipantsFromStorage,
@@ -12,32 +13,39 @@ import {
 import ParticipantManager from '@/components/ParticipantManager';
 import ConstraintsManager from '@/components/ConstraintsManager';
 import ResultsDisplay from '@/components/ResultsDisplay';
+import AuthGuard from '@/components/AuthGuard';
+import Header from '@/components/Header';
 
-export default function Home() {
+function HomeContent() {
+  const { data: session } = useSession();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [assignments, setAssignments] = useState<Assignment[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const userId = session?.user?.id;
+
   // Load participants and assignments from localStorage on mount
   useEffect(() => {
-    const storedParticipants = loadParticipantsFromStorage();
+    if (!userId) return;
+
+    const storedParticipants = loadParticipantsFromStorage(userId);
     if (storedParticipants.length > 0) {
       setParticipants(storedParticipants);
     }
 
-    const storedAssignments = loadAssignmentsFromStorage();
+    const storedAssignments = loadAssignmentsFromStorage(userId);
     if (storedAssignments && storedAssignments.length > 0) {
       setAssignments(storedAssignments);
     }
-  }, []);
+  }, [userId]);
 
   // Save to localStorage whenever participants change
   useEffect(() => {
-    if (participants.length > 0) {
-      saveParticipantsToStorage(participants);
+    if (participants.length > 0 && userId) {
+      saveParticipantsToStorage(participants, userId);
     }
-  }, [participants]);
+  }, [participants, userId]);
 
   const handleAddParticipant = (name: string) => {
     if (name.trim() === '') return;
@@ -60,7 +68,7 @@ export default function Home() {
         }))
     );
     setAssignments(null);
-    clearAssignmentsFromStorage();
+    clearAssignmentsFromStorage(userId);
   };
 
   const handleUpdateConstraints = (participantName: string, notAllowedNames: string[]) => {
@@ -72,7 +80,7 @@ export default function Home() {
       )
     );
     setAssignments(null);
-    clearAssignmentsFromStorage();
+    clearAssignmentsFromStorage(userId);
   };
 
   const handleGenerate = () => {
@@ -88,7 +96,7 @@ export default function Home() {
     try {
       const result = generateSecretSanta(participants);
       setAssignments(result.assignments);
-      saveAssignmentsToStorage(result.assignments);
+      saveAssignmentsToStorage(result.assignments, userId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate assignments');
     } finally {
@@ -98,6 +106,7 @@ export default function Home() {
 
   return (
     <main className="container">
+      <Header />
       <div className="header">
         <h1>🎄 Secret Santa Generator</h1>
         <p>Create random gift exchange assignments with custom constraints</p>
@@ -145,7 +154,7 @@ export default function Home() {
               assignments={assignments}
               onClear={() => {
                 setAssignments(null);
-                clearAssignmentsFromStorage();
+                clearAssignmentsFromStorage(userId);
               }}
             />
           </div>
@@ -227,6 +236,14 @@ export default function Home() {
         }
       `}</style>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <AuthGuard>
+      <HomeContent />
+    </AuthGuard>
   );
 }
 
