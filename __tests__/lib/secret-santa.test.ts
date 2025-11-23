@@ -1,4 +1,4 @@
-import { generateSecretSanta, Participant, Assignment } from '@/lib/secret-santa';
+import { generateSecretSanta, Participant } from '@/lib/secret-santa';
 
 describe('generateSecretSanta', () => {
   describe('basic functionality', () => {
